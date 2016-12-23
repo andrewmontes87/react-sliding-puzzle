@@ -1,0 +1,47 @@
+.puzzleBox {
+
+  .example-enter {
+    opacity: 0.01;
+  }
+
+  .example-enter.example-enter-active {
+    opacity: 1;
+    transition: opacity 300ms ease-in;
+  }
+
+  .example-leave {
+    opacity: 1;
+  }
+
+  .example-leave.example-leave-active {
+    opacity: 0.01;
+    transition: opacity 300ms ease-in;
+  }
+
+  table, tr, td {
+    opacity: 1;    
+    transition: opacity 300ms ease-in;         
+  }
+
+  td {
+    width: 3em;
+    height: 3em;
+    font-size: 1.5em;
+    text-align: center;
+    opacity: 1;    
+    transition: opacity 300ms ease-in;   
+    border: 1px solid black;  
+  }
+
+  .emptyCell {
+    background-color: white;
+    opacity: 0;
+    transition: opacity 300ms ease-in;    
+  }
+  .fullCell {
+    background-color: #ddd;
+    opacity: 1;
+    transition: opacity 300ms ease-in;  
+  }
+
+}
