@@ -4,10 +4,13 @@ export default class PuzzleBox extends Component {
 
   constructor(props) {
     super(props);
-    this.DIM = 3;
-    this.STEPS = 3;
+    this.DIM = 4;
+    this.MINSHUFFLE = 4;
+    this.MAXSHUFFLE = 8;
+    const startData = this.prepData();
     this.state = {
-      data: this.prepData(),
+      refData: startData,
+      data: startData,
       lastMoves: []
     };
   }
@@ -19,24 +22,40 @@ export default class PuzzleBox extends Component {
       // push a new empty array
       data.push([]);
       // for each cell...
-      for (let nidx = 0 + (idx * this.DIM); nidx < this.DIM + (idx * this.DIM); nidx++) {
+      for (let nidx = 1 + (idx * this.DIM); nidx <= this.DIM + (idx * this.DIM); nidx++) {
         // push a new number
-        data[idx].push(nidx);
+        if (nidx) {
+          data[idx].push(nidx);
+        }
       }
     }
+    data[this.DIM - 1][this.DIM - 1] = 0;
     return data;
+  }
+
+  checkIfSolved(data) {
+    return JSON.stringify(data) === JSON.stringify(this.state.refData);
   }
 
   shufflePuzzle() {
     let resetData = this.prepData();
     this.state.lastMoves = [];
     console.log('Shuffle!');
-    for (let vg = 0; vg < this.STEPS; vg++) {
+    const steps = Math.floor(Math.random() * (this.MAXSHUFFLE - this.MINSHUFFLE + 1)) + this.MINSHUFFLE;
+    for (let vg = 0; vg < steps; vg++) {
       const empty = this.findEmpty(resetData);
-      const next = this.findNext(empty);
+      const next = this.findNext(resetData, empty);
       resetData = this.moveElement(resetData, next.row, next.cell);
     }
     this.setState({ data: resetData });
+  }
+
+  resetPuzzle() {
+    const resetData = this.prepData();
+    this.setState({
+      data: resetData,
+      lastMoves: []
+    });
   }
 
   findEmpty(data) {
@@ -53,7 +72,7 @@ export default class PuzzleBox extends Component {
     return null;
   }
 
-  findNext(empty) {
+  findNext(data, empty) {
     const ri = empty.row;
     const ci = empty.cell;
     const nextOptions = [];
@@ -89,7 +108,12 @@ export default class PuzzleBox extends Component {
         cell: leftci
       });
     }
-    const randOption = nextOptions[Math.floor(Math.random() * nextOptions.length)];
+    let randOption = nextOptions[Math.floor(Math.random() * nextOptions.length)];
+    while (data[randOption.row][randOption.cell] === this.state.lastMoves[0]) {
+      console.log('trying again');
+      randOption = nextOptions[Math.floor(Math.random() * nextOptions.length)];
+    }
+    console.log(randOption);
     return randOption;
   }
 
@@ -139,6 +163,13 @@ export default class PuzzleBox extends Component {
       this.setState({ data: matrix });
     };
     return (<div>
+        <button className={styles.shuffleButton} onClick={this.shufflePuzzle.bind(this)}>Shuffle</button>
+        <button className={styles.shuffleButton} onClick={this.resetPuzzle.bind(this)}>Reset</button>
+        {
+          ( this.checkIfSolved(this.state.data) ) ?
+          (<h3>Status: Solved</h3>) :
+          (<h3>Status: Unsolved</h3>)
+        }
         <table key={'table'} className={styles.puzzleBox}>
           <tbody key={'tbody'}>
             {
@@ -159,15 +190,21 @@ export default class PuzzleBox extends Component {
             }
           </tbody>
         </table>
-        <button onClick={this.shufflePuzzle.bind(this)}>Shuffle the puzzle!</button>
-        <h4>Moves</h4>
+        <h4 className={styles.movesListTitle}>Most Recent Moves</h4>
+        <ol>
         {
           this.state.lastMoves.map( (move) => {
             return (
-              <p>{move}</p>
+              <li><h5>{move}</h5></li>
             );
           })
         }
+        {
+          (!this.state.lastMoves.length) ?
+          (<h5>No moves yet</h5>) :
+          null
+        }
+        </ol>
     </div>);
   }
 }
