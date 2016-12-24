@@ -4,6 +4,8 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Helmet from 'react-helmet';
 import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
+import ogImg from '../../../static/images/sliding_puzzle_og.png';
+
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -22,6 +24,15 @@ export default class App extends Component {
 
   render() {
     const styles = require('./App.scss');
+
+    config.app.head.meta = config.app.head.meta.map(( meta ) => {
+      // since config.js doesnt have access to import, we will inject the image path here
+      // after a replacement of the absolute url with
+      if ( meta.property === 'og:image' || meta.property === 'twitter:image') {
+        meta.content = config.domain + ogImg.replace(/.*dist/, '/dist');
+      }
+      return meta;
+    });
 
     return (
       <div className={styles.app}>

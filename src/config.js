@@ -30,8 +30,10 @@ module.exports = Object.assign({
         {property: 'og:card', content: 'summary'},
         {property: 'og:site', content: ''},
         {property: 'og:creator', content: ''},
-        {property: 'og:image:width', content: '200'},
-        {property: 'og:image:height', content: '200'}
+        {property: 'twitter:card', content: 'summary' },
+        {property: 'twitter:title', content: 'Puzzles' },
+        {property: 'twitter:description', content: 'Puzzles'},
+        {property: 'twitter:image', content: ''},
       ]
     }
   },
