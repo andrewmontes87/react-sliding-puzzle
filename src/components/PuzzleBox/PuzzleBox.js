@@ -4,64 +4,75 @@ export default class PuzzleBox extends Component {
 
   constructor(props) {
     super(props);
-    this.DIM = 4;
-    this.MINSHUFFLE = 4;
-    this.MAXSHUFFLE = 8;
-    const startData = this.prepData();
+    const defaultDim = 3;
+    const puzzleMatrix = this.prepData(defaultDim);
+    const solutionMatrix = this.prepData(defaultDim);
     this.state = {
-      refData: startData,
-      data: startData,
-      lastMoves: []
+      dim: defaultDim,
+      solutionMatrix: solutionMatrix,
+      puzzleMatrix: puzzleMatrix,
+      lastMoves: [],
+      isSolved: true
     };
   }
 
-  prepData() {
+  componentDidMount() {
+    this.shufflePuzzle(this.state.dim);
+  }
+
+  prepData(dim) {
     const data = [];
     // for each row...
-    for (let idx = 0; idx < this.DIM; idx++) {
+    for (let idx = 0; idx < dim; idx++) {
       // push a new empty array
       data.push([]);
       // for each cell...
-      for (let nidx = 1 + (idx * this.DIM); nidx <= this.DIM + (idx * this.DIM); nidx++) {
+      for (let nidx = 1 + (idx * dim); nidx <= dim + (idx * dim); nidx++) {
         // push a new number
         if (nidx) {
           data[idx].push(nidx);
         }
       }
     }
-    data[this.DIM - 1][this.DIM - 1] = 0;
+    data[dim - 1][dim - 1] = 0;
     return data;
   }
 
-  checkIfSolved(data) {
-    return JSON.stringify(data) === JSON.stringify(this.state.refData);
-  }
-
-  shufflePuzzle() {
-    let resetData = this.prepData();
+  shufflePuzzle(dim) {
+    const minShuffle = dim;
+    const maxShuffle = dim * 2;
+    const steps = Math.floor(Math.random() * (maxShuffle - minShuffle + 1)) + minShuffle;
+    const solutionMatrix = this.prepData(dim);
+    let puzzleMatrix = this.prepData(dim);
     this.state.lastMoves = [];
-    console.log('Shuffle!');
-    const steps = Math.floor(Math.random() * (this.MAXSHUFFLE - this.MINSHUFFLE + 1)) + this.MINSHUFFLE;
     for (let vg = 0; vg < steps; vg++) {
-      const empty = this.findEmpty(resetData);
-      const next = this.findNext(resetData, empty);
-      resetData = this.moveElement(resetData, next.row, next.cell);
+      const next = this.findNext(puzzleMatrix);
+      puzzleMatrix = this.moveElement(puzzleMatrix, next.row, next.cell);
     }
-    this.setState({ data: resetData });
-  }
-
-  resetPuzzle() {
-    const resetData = this.prepData();
     this.setState({
-      data: resetData,
-      lastMoves: []
+      dim: dim,
+      puzzleMatrix: puzzleMatrix,
+      solutionMatrix: solutionMatrix
     });
   }
 
-  findEmpty(data) {
-    for (let ir = 0; ir < this.DIM; ir++) {
-      for (let ic = 0; ic < this.DIM; ic++) {
-        if (data[ir][ic] === 0) {
+  resetPuzzle(dim) {
+    const puzzleMatrix = this.prepData(dim);
+    const solutionMatrix = this.prepData(dim);
+    this.setState({
+      dim: dim,
+      puzzleMatrix: puzzleMatrix,
+      solutionMatrix: solutionMatrix,
+      lastMoves: [],
+      isSolved: true
+    });
+  }
+
+  findEmpty(puzzleMatrix) {
+    const dim = puzzleMatrix.length;
+    for (let ir = 0; ir < dim; ir++) {
+      for (let ic = 0; ic < dim; ic++) {
+        if (!puzzleMatrix[ir][ic]) {
           return {
             row: ir,
             cell: ic
@@ -72,7 +83,9 @@ export default class PuzzleBox extends Component {
     return null;
   }
 
-  findNext(data, empty) {
+  findNext(puzzleMatrix) {
+    const dim = puzzleMatrix.length;
+    const empty = this.findEmpty(puzzleMatrix);
     const ri = empty.row;
     const ci = empty.cell;
     const nextOptions = [];
@@ -85,14 +98,14 @@ export default class PuzzleBox extends Component {
       });
     }
     const rightri = ri;
-    const rightci = ci + 1 < this.DIM ? ci + 1 : null;
+    const rightci = ci + 1 < dim ? ci + 1 : null;
     if (rightri !== null && rightci !== null) {
       nextOptions.push({
         row: rightri,
         cell: rightci
       });
     }
-    const bottomri = ri + 1 < this.DIM ? ri + 1 : null;
+    const bottomri = ri + 1 < dim ? ri + 1 : null;
     const bottomci = ci;
     if (bottomri !== null && bottomci !== null) {
       nextOptions.push({
@@ -109,71 +122,86 @@ export default class PuzzleBox extends Component {
       });
     }
     let randOption = nextOptions[Math.floor(Math.random() * nextOptions.length)];
-    while (data[randOption.row][randOption.cell] === this.state.lastMoves[0]) {
-      console.log('trying again');
+    while (puzzleMatrix[randOption.row][randOption.cell] === this.state.lastMoves[0]) {
       randOption = nextOptions[Math.floor(Math.random() * nextOptions.length)];
     }
-    console.log(randOption);
     return randOption;
   }
 
-  moveElement(matrix, row, cell) {
-    const data = matrix;
-    const refCell = data[row][cell];
-    // if already the emnpty cell, return untouched data
-    if (data[row][cell] === 0) return data;
+  moveElement(puzzleMatrix, row, cell) {
+    const dim = puzzleMatrix.length;
+    const refCell = puzzleMatrix[row][cell];
+    // if already the empty cell, return untouched puzzleMatrix
+    if (puzzleMatrix[row][cell] === 0) return puzzleMatrix;
     // if not, check available nearby cells
-    const top = row > 0 ? data[row - 1][cell] : -1;
-    const right = cell < this.DIM - 1 ? data[row][cell + 1] : -1;
-    const bottom = row < this.DIM - 1 ? data[row + 1][cell] : -1;
-    const left = cell > 0 ? data[row][cell - 1] : -1;
+    const top = row > 0 ? puzzleMatrix[row - 1][cell] : -1;
+    const right = cell < dim - 1 ? puzzleMatrix[row][cell + 1] : -1;
+    const bottom = row < dim - 1 ? puzzleMatrix[row + 1][cell] : -1;
+    const left = cell > 0 ? puzzleMatrix[row][cell - 1] : -1;
     // if any of the nearby cells are the empty, swap places
-    let move = '';
-    if (top === 0) {
-      const tmp = data[row - 1][cell];
-      data[row - 1][cell] = data[row][cell];
-      data[row][cell] = tmp;
-      move = 'top';
-    } else if (right === 0) {
-      const tmp = data[row][cell + 1];
-      data[row][cell + 1] = data[row][cell];
-      data[row][cell] = tmp;
-      move = 'right';
-    } else if (bottom === 0) {
-      const tmp = data[row + 1][cell];
-      data[row + 1][cell] = data[row][cell];
-      data[row][cell] = tmp;
-      move = 'bottom';
-    } else if (left === 0) {
-      const tmp = data[row][cell - 1];
-      data[row][cell - 1] = data[row][cell];
-      data[row][cell] = tmp;
-      move = 'left';
+    let tmp;
+    if (!top) {
+      tmp = puzzleMatrix[row - 1][cell];
+      puzzleMatrix[row - 1][cell] = refCell;
+    } else if (!right) {
+      tmp = puzzleMatrix[row][cell + 1];
+      puzzleMatrix[row][cell + 1] = refCell;
+    } else if (!bottom) {
+      tmp = puzzleMatrix[row + 1][cell];
+      puzzleMatrix[row + 1][cell] = refCell;
+    } else if (!left) {
+      tmp = puzzleMatrix[row][cell - 1];
+      puzzleMatrix[row][cell - 1] = refCell;
     }
-    console.log(refCell, 'tile moves', move, 'from', row, cell);
+    puzzleMatrix[row][cell] = tmp;
     this.state.lastMoves.unshift(refCell);
-    return data;
+    this.checkIfSolved(puzzleMatrix);
+    return puzzleMatrix;
+  }
+
+  checkIfSolved(puzzleMatrix) {
+    this.setState({ isSolved: JSON.stringify(puzzleMatrix) === JSON.stringify(this.state.solutionMatrix) });
+  }
+
+
+  handleNChange(event) {
+    const dim = parseInt(event.target.value, 10);
+    this.shufflePuzzle(dim);
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
   }
 
   render() {
     const styles = require('./PuzzleBox.scss');
     const moveElementHandler = (ridx, cidx) => {
-      let matrix = this.state.data;
-      matrix = this.moveElement(matrix, ridx, cidx);
-      this.setState({ data: matrix });
+      let puzzleMatrix = this.state.puzzleMatrix;
+      puzzleMatrix = this.moveElement(puzzleMatrix, ridx, cidx);
+      this.setState({ puzzleMatrix: puzzleMatrix });
     };
     return (<div>
-        <button className={styles.shuffleButton} onClick={this.shufflePuzzle.bind(this)}>Shuffle</button>
-        <button className={styles.shuffleButton} onClick={this.resetPuzzle.bind(this)}>Reset</button>
+        <form onSubmit={this.handleSubmit.bind(this)}>
+          <label>
+            Pick the size of your puzzle:&nbsp;
+            <select value={parseInt(this.state.dim, 10)} onChange={this.handleNChange.bind(this)}>
+              <option value="3">3 x 3</option>
+              <option value="4">4 x 4</option>
+              <option value="5">5 x 5</option>
+            </select>
+          </label>
+        </form>
+        <button className={styles.shuffleButton} onClick={this.shufflePuzzle.bind(this, this.state.dim)}>Shuffle</button>
+        <button className={styles.shuffleButton} onClick={this.resetPuzzle.bind(this, this.state.dim)}>Reset</button>
         {
-          ( this.checkIfSolved(this.state.data) ) ?
+          ( this.state.isSolved ) ?
           (<h3>Status: Solved</h3>) :
           (<h3>Status: Unsolved</h3>)
         }
         <table key={'table'} className={styles.puzzleBox}>
           <tbody key={'tbody'}>
             {
-              this.state.data.map(function puzzleRow(row, ridx) {
+              this.state.puzzleMatrix.map(function puzzleRow(row, ridx) {
                 return (
                   <tr key={'tr' + row}>{
                     row.map(function puzzleCell(cell, cidx) {
