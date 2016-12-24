@@ -60,17 +60,18 @@ export default class PuzzleBox extends Component {
   }
 
   // FIND A RANDOM NEXT PIECE TO SLIDE TO THE EMPTY SPACE
-  findNext(puzzleMatrix) {
+  findRandomNext(puzzleMatrix) {
     const dim = puzzleMatrix.length;
     const lastMove = this.state.lastMoves[0];
-    const possibleMoves = [];
+    let possibleMoves = [];
 
     // find the row, column indexes of the empty space
     const empty = this.findEmpty(puzzleMatrix);
     const ri = empty.row;
     const ci = empty.cell;
 
-    // row, column indexes of next moves in four direcionts
+    // row, column indexes of the surrounding pieces in four directions
+    // will be null if not a valid piece (e.g. at the edge of the board)
     const topri = ri - 1 >= 0 ? ri - 1 : null;
     const topci = ci;
     const rightri = ri;
@@ -80,37 +81,41 @@ export default class PuzzleBox extends Component {
     const leftri = ri;
     const leftci = ci - 1 >= 0 ? ci - 1 : null;
 
-    // check four directions for possible moves
-    if (topri !== null && topci !== null) {
-      possibleMoves.push({
-        row: topri,
-        cell: topci
+    // helper to track possible moves
+    const pushPossibleMove = (moves, rx, cx) => {
+      moves.push({
+        row: rx,
+        cell: cx
       });
+      return moves;
+    };
+
+    // check four directions for possible moves
+    // if both row and column indexes are not null,
+    // that piece could be the randomly selected next move
+    if (topri !== null && topci !== null) {
+      possibleMoves = pushPossibleMove(possibleMoves, topri, topci);
     }
     if (rightri !== null && rightci !== null) {
-      possibleMoves.push({
-        row: rightri,
-        cell: rightci
-      });
+      possibleMoves = pushPossibleMove(possibleMoves, rightri, rightci);
     }
     if (bottomri !== null && bottomci !== null) {
-      possibleMoves.push({
-        row: bottomri,
-        cell: bottomci
-      });
+      possibleMoves = pushPossibleMove(possibleMoves, bottomri, bottomci);
     }
     if (leftri !== null && leftci !== null) {
-      possibleMoves.push({
-        row: leftri,
-        cell: leftci
-      });
+      possibleMoves = pushPossibleMove(possibleMoves, leftri, leftci);
     }
 
-    // choose a random move
-    let randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-    // don't repeat the last move
+    // helper to choose a random move
+    const selectRandomMove = (moves) => {
+      return moves[Math.floor(Math.random() * moves.length)];
+    };
+
+    // prime with a first try at a random move
+    let randomMove = selectRandomMove(possibleMoves);
+    // make sure we don't repeat the last move
     while (puzzleMatrix[randomMove.row][randomMove.cell] === lastMove) {
-      randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+      randomMove = selectRandomMove(possibleMoves);
     }
 
     return randomMove;
@@ -119,36 +124,43 @@ export default class PuzzleBox extends Component {
   // MOVE AN ELEMENT TO THE EMPTY SPACE IN A PUZZLE MATRIX
   moveElement(puzzleMatrix, row, cell) {
     const dim = puzzleMatrix.length;
-    const movingElement = puzzleMatrix[row][cell];
+    const clickedElement = puzzleMatrix[row][cell];
 
     // if already the empty cell, return untouched puzzleMatrix
     if (puzzleMatrix[row][cell] === 0) return puzzleMatrix;
 
-    // if not, check available nearby cells
-    // first set limits based on where the piece is on the board
-    const top = row > 0 ? puzzleMatrix[row - 1][cell] : -1;
-    const right = cell < dim - 1 ? puzzleMatrix[row][cell + 1] : -1;
-    const bottom = row < dim - 1 ? puzzleMatrix[row + 1][cell] : -1;
-    const left = cell > 0 ? puzzleMatrix[row][cell - 1] : -1;
+    // check the pieces around the clickedElement
+    // -1 means we're at the edge
+    // 0 means it's the empty space
+    // number means it's another puzzle piece
+    const pieceAboveClickedElement = row > 0 ? puzzleMatrix[row - 1][cell] : -1;
+    const pieceToRightOfClickedElement = cell < dim - 1 ? puzzleMatrix[row][cell + 1] : -1;
+    const pieceBelowClickedElement = row < dim - 1 ? puzzleMatrix[row + 1][cell] : -1;
+    const pieceToLeftOfClickedElement = cell > 0 ? puzzleMatrix[row][cell - 1] : -1;
 
     // if any of the nearby cells are the empty, swap places
-    let tmp;
-    if (!top) {
-      tmp = puzzleMatrix[row - 1][cell];
-      puzzleMatrix[row - 1][cell] = movingElement;
-    } else if (!right) {
-      tmp = puzzleMatrix[row][cell + 1];
-      puzzleMatrix[row][cell + 1] = movingElement;
-    } else if (!bottom) {
-      tmp = puzzleMatrix[row + 1][cell];
-      puzzleMatrix[row + 1][cell] = movingElement;
-    } else if (!left) {
-      tmp = puzzleMatrix[row][cell - 1];
-      puzzleMatrix[row][cell - 1] = movingElement;
+    // using ! means that the edges (-1) don't trigger anything
+    let pieceMoved = false;
+    if (!pieceAboveClickedElement) {
+      pieceMoved = true;
+      puzzleMatrix[row - 1][cell] = clickedElement;
+    } else if (!pieceToRightOfClickedElement) {
+      pieceMoved = true;
+      puzzleMatrix[row][cell + 1] = clickedElement;
+    } else if (!pieceBelowClickedElement) {
+      pieceMoved = true;
+      puzzleMatrix[row + 1][cell] = clickedElement;
+    } else if (!pieceToLeftOfClickedElement) {
+      pieceMoved = true;
+      puzzleMatrix[row][cell - 1] = clickedElement;
     }
 
-    puzzleMatrix[row][cell] = tmp;
-    this.state.lastMoves.unshift(movingElement);
+    // if we moved a piece, put the empty in the place of the element we just moved
+    // and track it as a recent move
+    if (pieceMoved) {
+      puzzleMatrix[row][cell] = 0;
+      this.state.lastMoves.unshift(clickedElement);
+    }
 
     return puzzleMatrix;
   }
@@ -194,7 +206,7 @@ export default class PuzzleBox extends Component {
     this.state.lastMoves = [];
     let solved;
     for (let vg = 0; vg < steps; vg++) {
-      const next = this.findNext(puzzleMatrix);
+      const next = this.findRandomNext(puzzleMatrix);
       puzzleMatrix = this.moveElement(puzzleMatrix, next.row, next.cell);
       solved = this.checkIfSolved(puzzleMatrix, this.state.solutionMatrix);
     }

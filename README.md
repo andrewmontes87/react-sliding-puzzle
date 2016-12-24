@@ -1,20 +1,21 @@
-# React Redux Universal Hot Example
-
-[![build status](https://img.shields.io/travis/erikras/react-redux-universal-hot-example/master.svg?style=flat-square)](https://travis-ci.org/erikras/react-redux-universal-hot-example)
-[![Dependency Status](https://david-dm.org/erikras/react-redux-universal-hot-example.svg?style=flat-square)](https://david-dm.org/erikras/react-redux-universal-hot-example)
-[![devDependency Status](https://david-dm.org/erikras/react-redux-universal-hot-example/dev-status.svg?style=flat-square)](https://david-dm.org/erikras/react-redux-universal-hot-example#info=devDependencies)
-[![react-redux-universal channel on discord](https://img.shields.io/badge/discord-react--redux--universal%40reactiflux-brightgreen.svg?style=flat-square)](https://discord.gg/0ZcbPKXt5bZZb1Ko)
-[![Demo on Heroku](https://img.shields.io/badge/demo-heroku-brightgreen.svg?style=flat-square)](https://react-redux.herokuapp.com)
-[![PayPal donate button](https://img.shields.io/badge/donate-paypal-brightgreen.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=E2LK57ZQ9YRMN)
+# Simple sliding puzzle with React
 
 ---
 
 ## About
 
-This is a starter boilerplate app I've put together using the following technologies:
+A simple sliding puzzle built with React.
+
+This is built using the "react-redux-universal-hot-example" from erikras
+[erikras/react-redux-universal-hot-example](https://github.com/erikras/react-redux-universal-hot-example)
+
+---
+### Everything below is adapted from erikras/react-redux-universal-hot-example/README.md
+
+
+It uses the following technologies:
 
 * ~~Isomorphic~~ [Universal](https://medium.com/@mjackson/universal-javascript-4761051b7ae9) rendering
-* Both client and server make calls to load data from separate API server
 * [React](https://github.com/facebook/react)
 * [React Router](https://github.com/rackt/react-router)
 * [Express](http://expressjs.com)
@@ -35,7 +36,6 @@ This is a starter boilerplate app I've put together using the following technolo
 * [webpack-isomorphic-tools](https://github.com/halt-hammerzeit/webpack-isomorphic-tools) to allow require() work for statics both on client and server
 * [mocha](https://mochajs.org/) to allow writing unit tests for the project.
 
-I cobbled this together from a wide variety of similar "starter" repositories. As I post this in June 2015, all of these libraries are right at the bleeding edge of web development. They may fall out of fashion as quickly as they have come into it, but I personally believe that this stack is the future of web development and will survive for several years. I'm building my new projects like this, and I recommend that you do, too.
 
 ## Installation
 
@@ -72,9 +72,6 @@ npm run build
 npm run start
 ```
 
-## Demo
-
-A demonstration of this app can be seen [running on heroku](https://react-redux.herokuapp.com), which is a deployment of the [heroku branch](https://github.com/erikras/react-redux-universal-hot-example/tree/heroku).
 
 ## Documentation
 
@@ -129,9 +126,7 @@ isolate concerns within a Redux application (aka [Ducks](https://github.com/erik
 
 This is where the meat of your server-side application goes. It doesn't have to be implemented in Node or Express at all. This is where you connect to your database and provide authentication and session management. In this example, it's just spitting out some json with the current time stamp.
 
-#### Getting data and actions into components
 
-To understand how the data and action bindings get into the components – there's only one, `InfoBar`, in this example – I'm going to refer to you to the [Redux](https://github.com/gaearon/redux) library. The only innovation I've made is to package the component and its wrapper in the same js file. This is to encapsulate the fact that the component is bound to the `redux` actions and state. The component using `InfoBar` needn't know or care if `InfoBar` uses the `redux` data or not.
 
 #### Images
 
@@ -235,10 +230,6 @@ To get this project to work on Heroku, you need to:
 
 The first deploy might take a while, but after that your `node_modules` dir should be cached.
 
-## FAQ
-
-This project moves fast and has an active community, so if you have a question that is not answered below please visit our [Discord channel](https://discord.gg/0ZcbPKXt5bZZb1Ko) or file an issue.
-
 
 ## Roadmap 
 
@@ -246,13 +237,4 @@ Although this isn't a library, we recently started versioning to make it easier 
 
 * [Inline Styles](docs/InlineStyles.md) - CSS is dead
 
-## Contributing
 
-I am more than happy to accept external contributions to the project in the form of feedback, bug reports and even better - pull requests :) 
-
-If you would like to submit a pull request, please make an effort to follow the guide in [CONTRIBUTING.md](CONTRIBUTING.md). 
- 
----
-Thanks for checking this out.
-
-– Erik Rasmussen, [@erikras](https://twitter.com/erikras)

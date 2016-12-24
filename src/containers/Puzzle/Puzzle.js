@@ -12,6 +12,7 @@ export default class Puzzle extends Component {
         <Helmet title="Sliding Puzzle"/>
         <p>A sliding puzzle consists of a frame of numbered square tiles in random order with one tile missing. </p>
         <p>The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space.</p>
+        <p>Check it out on github: <a href="https://github.com/andrewmontes87/react-sliding-puzzle" target="_blank">https://github.com/andrewmontes87/react-sliding-puzzle</a></p>
         <p><strong>How to play</strong></p>
         <ul>
           <li>Click a tile that is next to the empty space to slide it over.</li>
