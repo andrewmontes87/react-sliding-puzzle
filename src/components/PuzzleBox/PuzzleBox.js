@@ -250,7 +250,7 @@ export default class PuzzleBox extends Component {
           (<h3>Status: Solved</h3>) :
           (<h3>Status: Unsolved</h3>)
         }
-        <table key={'table'} className={styles.puzzleBox}>
+        <table key={'table'} className={ this.state.isSolved ? styles.puzzleBox + ' ' + styles.solvedPuzzle : styles.puzzleBox}>
           <tbody key={'tbody'}>
             {
               this.state.puzzleMatrix.map(function puzzleRow(row, ridx) {

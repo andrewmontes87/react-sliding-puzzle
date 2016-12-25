@@ -1,26 +1,8 @@
 .puzzleBox {
 
-  .example-enter {
-    opacity: 0.01;
-  }
-
-  .example-enter.example-enter-active {
-    opacity: 1;
-    transition: opacity 300ms ease-in;
-  }
-
-  .example-leave {
-    opacity: 1;
-  }
-
-  .example-leave.example-leave-active {
-    opacity: 0.01;
-    transition: opacity 300ms ease-in;
-  }
-
   table, tr, td {
     opacity: 1;    
-    transition: opacity 300ms ease-in;    
+
   }
 
   td {
@@ -29,22 +11,29 @@
     font-size: 1.5em;
     text-align: center;
     opacity: 1;    
-    transition: opacity 300ms ease-in;   
-    border: 1px solid black;
+    /*border: 1px solid black;*/
+    border: 5px solid grey;
+    border-style: inset;
   }
 
   .emptyCell {
     background-color: white;
     opacity: 0;
-    transition: opacity 300ms ease-in;    
+    
   }
   .fullCell {
     background-color: #ddd;
     opacity: 1;
-    transition: opacity 300ms ease-in;  
   }
 
 }
+
+.solvedPuzzle {
+  .fullCell {
+    background-color: #9AC659;
+  }
+}
+
 .movesListTitle {
   margin-top: 2em;
 }

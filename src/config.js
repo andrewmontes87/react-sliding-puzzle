@@ -9,7 +9,7 @@ const environment = {
   }
 }[process.env.NODE_ENV || 'development'];
 
-const domain =  process.env.DOMAIN || 'https://react-sliding-puzzle.herokuapp.com/'
+const domain = process.env.DOMAIN || 'https://react-sliding-puzzle.herokuapp.com/';
 
 module.exports = Object.assign({
   host: process.env.HOST || 'localhost',
