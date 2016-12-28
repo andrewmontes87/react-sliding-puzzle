@@ -1,3 +1,7 @@
 webpack/*
 karma.conf.js
 tests.webpack.js
+
+src/utils/hashset.js
+src/utils/hashtable.js
+src/utils/priority-queue.js

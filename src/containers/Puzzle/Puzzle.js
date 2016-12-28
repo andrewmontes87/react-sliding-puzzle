@@ -19,6 +19,7 @@ export default class Puzzle extends Component {
           <li>See previous board moves in the list below to help solve the puzzle.</li>
           <li>Change the dimensions of your puzzle for a harder challenge.</li>
           <li>Click "Shuffle" to create a random shuffled puzzle to solve.</li>
+          <li>Click "Solve" to have the puzzle solved for you, step by step.</li>
           <li>Click "Reset" to bring the puzzle back to a solved state.</li>
         </ul>
         <PuzzleBox />
