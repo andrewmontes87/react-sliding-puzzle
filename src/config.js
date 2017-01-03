@@ -9,12 +9,12 @@ const environment = {
   }
 }[process.env.NODE_ENV || 'development'];
 
-const domain = process.env.DOMAIN || 'https://react-sliding-puzzle.herokuapp.com/';
+const domain = process.env.DOMAIN || 'http://react-sliding-puzzle.herokuapp.com/';
 
 module.exports = Object.assign({
   host: process.env.HOST || 'localhost',
   port: process.env.PORT || 3000,
-  apiHost: process.env.APIHOST || 'https://node-sliding-puzzle.herokuapp.com',
+  apiHost: process.env.APIHOST || 'http://node-sliding-puzzle.herokuapp.com',
   apiPort: process.env.APIPORT || 80,
   domain: domain,
   loggingOff: process.env.LOGGING_OFF || true,
