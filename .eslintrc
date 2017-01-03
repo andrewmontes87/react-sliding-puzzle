@@ -17,7 +17,8 @@
     "no-console": 0,
     "no-alert": 0,
     "no-unused-vars": [1, {"vars": "all", "args": "none"}],
-    "no-extend-native": 0           // allow adding to native types
+    "no-extend-native": 0,     // allow adding to native types
+    "react/prop-types": 0
   },
   "plugins": [
     "react", "import"

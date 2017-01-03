@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { IndexLink } from 'react-router';
-import Navbar from 'react-bootstrap/lib/Navbar';
+// import { IndexLink } from 'react-router';
+// import Navbar from 'react-bootstrap/lib/Navbar';
 import Helmet from 'react-helmet';
 import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
@@ -37,17 +37,6 @@ export default class App extends Component {
     return (
       <div className={styles.app}>
         <Helmet {...config.app.head}/>
-        <Navbar fixedTop>
-          <Navbar.Header>
-            <Navbar.Brand>
-              <IndexLink to="/" activeStyle={{color: '#33e0ff'}}>
-                <div className={styles.brand}/>
-                <span>{config.app.title}</span>
-              </IndexLink>
-            </Navbar.Brand>
-            <Navbar.Toggle/>
-          </Navbar.Header>
-        </Navbar>
         <div className={styles.appContent}>
           {this.props.children}
         </div>
@@ -55,3 +44,21 @@ export default class App extends Component {
     );
   }
 }
+// <div className={styles.app}>
+//   <Helmet {...config.app.head}/>
+//   <Navbar fixedTop>
+//     <Navbar.Header>
+//       <Navbar.Brand>
+//         <IndexLink to="/" activeStyle={{color: '#33e0ff'}}>
+//           <div className={styles.brand}/>
+//           <span>{config.app.title}</span>
+//         </IndexLink>
+//       </Navbar.Brand>
+//       <Navbar.Toggle/>
+//     </Navbar.Header>
+//   </Navbar>
+//   <div className={styles.appContent}>
+//     {this.props.children}
+//   </div>
+// </div>
+

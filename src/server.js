@@ -19,46 +19,25 @@ import createHistory from 'react-router/lib/createMemoryHistory';
 import {Provider} from 'react-redux';
 import getRoutes from './routes';
 
-const targetUrl = 'http://' + config.apiHost + ':' + config.apiPort;
+const targetUrl = config.apiHost + ':' + config.apiPort;
 const pretty = new PrettyError();
 const app = new Express();
 const server = new http.Server(app);
-const proxy = httpProxy.createProxyServer({
-  target: targetUrl,
-  ws: true
-});
+
+const client = new ApiClient(require('node-fetch'))
+
+// passing serverconfig to html to store as window.__serverConfig
+const serverConfig = {
+  buildVersion: require('../package.json').version,
+  domain: config.domain,
+  loggingOff: config.loggingOff,
+  apiHost: config.apiHost,
+  apiPort: config.apiPort,
+}
 
 app.use(compression());
 app.use(favicon(path.join(__dirname, '..', 'static', 'favicon.ico')));
-
 app.use(Express.static(path.join(__dirname, '..', 'static')));
-
-// Proxy to API server
-app.use('/api', (req, res) => {
-  proxy.web(req, res, {target: targetUrl});
-});
-
-app.use('/ws', (req, res) => {
-  proxy.web(req, res, {target: targetUrl + '/ws'});
-});
-
-server.on('upgrade', (req, socket, head) => {
-  proxy.ws(req, socket, head);
-});
-
-// added the error handling to avoid https://github.com/nodejitsu/node-http-proxy/issues/527
-proxy.on('error', (error, req, res) => {
-  let json;
-  if (error.code !== 'ECONNRESET') {
-    console.error('proxy error', error);
-  }
-  if (!res.headersSent) {
-    res.writeHead(500, {'content-type': 'application/json'});
-  }
-
-  json = {error: 'proxy_error', reason: error.message};
-  res.end(JSON.stringify(json));
-});
 
 app.use((req, res) => {
   if (__DEVELOPMENT__) {
@@ -66,14 +45,13 @@ app.use((req, res) => {
     // hot module replacement is enabled in the development env
     webpackIsomorphicTools.refresh();
   }
-  const client = new ApiClient(req);
   const memoryHistory = createHistory(req.originalUrl);
   const store = createStore(memoryHistory, client);
   const history = syncHistoryWithStore(memoryHistory, store);
 
   function hydrateOnClient() {
     res.send('<!doctype html>\n' +
-      ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} store={store}/>));
+      ReactDOM.renderToString(<Html config={serverConfig} assets={webpackIsomorphicTools.assets()} store={store}/>));
   }
 
   if (__DISABLE_SSR__) {
@@ -101,7 +79,7 @@ app.use((req, res) => {
         global.navigator = {userAgent: req.headers['user-agent']};
 
         res.send('<!doctype html>\n' +
-          ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} component={component} store={store}/>));
+          ReactDOM.renderToString(<Html config={serverConfig} assets={webpackIsomorphicTools.assets()} component={component} store={store}/>));
       });
     } else {
       res.status(404).send('Not found');
@@ -114,7 +92,7 @@ if (config.port) {
     if (err) {
       console.error(err);
     }
-    console.info('----\n==> ✅  %s is running, talking to API server on %s.', config.app.title, config.apiPort);
+    console.info('----\n==> ✅  %s is running, talking to API server %s on port %s.', config.app.title ,config.apiHost, config.apiPort);
     console.info('==> 💻  Open http://%s:%s in a browser to view the app.', config.host, config.port);
   });
 } else {

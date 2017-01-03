@@ -1,12 +1,19 @@
 import { createStore as _createStore, applyMiddleware, compose } from 'redux';
 import createMiddleware from './middleware/clientMiddleware';
 import { routerMiddleware } from 'react-router-redux';
+import createLogger from 'redux-logger';
+import config from '../config';
+
 
 export default function createStore(history, client, data) {
+  const logger = createLogger();
   // Sync dispatched route actions to the history
   const reduxRouterMiddleware = routerMiddleware(history);
 
-  const middleware = [createMiddleware(client), reduxRouterMiddleware];
+  let middleware = [createMiddleware(client), reduxRouterMiddleware, logger];
+  if (config.loggingOff) {
+    middleware = [createMiddleware(client), reduxRouterMiddleware];
+  }
 
   let finalCreateStore;
   if (__DEVELOPMENT__ && __CLIENT__ && __DEVTOOLS__) {

@@ -5,4 +5,3 @@
  *
  */
 
-export PuzzleBox from './PuzzleBox/PuzzleBox';

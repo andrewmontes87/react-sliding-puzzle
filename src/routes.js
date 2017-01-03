@@ -6,10 +6,7 @@ import {
     NotFound,
   } from 'containers';
 
-export default () => {
-  /**
-   * Please keep routes in alphabetical order
-   */
+export default (store) => {
   return (
     <Route path="/" component={App}>
       { /* Home (main) route */ }
