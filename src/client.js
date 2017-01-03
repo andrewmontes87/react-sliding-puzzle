@@ -21,21 +21,6 @@ const dest = document.getElementById('content');
 const store = createStore(_browserHistory, client, window.__data);
 const history = syncHistoryWithStore(_browserHistory, store);
 
-// function initSocket() {
-//   const socket = io('', {path: '/ws'});
-//   socket.on('news', (data) => {
-//     console.log(data);
-//     socket.emit('my other event', { my: 'data from client' });
-//   });
-//   socket.on('msg', (data) => {
-//     console.log(data);
-//   });
-
-//   return socket;
-// }
-
-// global.socket = initSocket();
-
 const component = (
   <Router render={(props) =>
         <ReduxAsyncConnect {...props} helpers={{client}} filter={item => !item.deferred} />
