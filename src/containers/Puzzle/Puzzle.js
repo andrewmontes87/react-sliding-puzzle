@@ -77,7 +77,7 @@ export default class Puzzle extends Component {
   // click handler for calling API with puzzle string
   getPuzzleSolution() {
     // only dim === 3 for now
-    if (this.state.dim === 3) {
+    if (this.state.dim === 3 || this.state.dim === 4) {
       // upddate state so UI handlers are disabled
       this.setState({ isBeingSolved: true });
       // // format puzzle as string to just values
@@ -162,13 +162,19 @@ export default class Puzzle extends Component {
         empty = moveResults[1];
         move = moveResults[2];
         const lastMovesClone = JSON.parse(JSON.stringify(this.state.lastMoves));
-        lastMovesClone.unshift(move);
+        if (move) {
+          lastMovesClone.unshift(move);
+        }
         const solved = PuzzleFunctions.checkIfSolved(puzzleMatrix, solutionMatrix);
         this.setState({
           puzzleMatrix: puzzleMatrix,
           emptyPos: empty,
           isSolved: solved,
-          lastMoves: lastMovesClone
+          lastMoves: lastMovesClone,
+          solutionObj: {},
+          searched: false,
+          searching: false,
+          error: false,
         });
       }
     };
@@ -190,9 +196,9 @@ export default class Puzzle extends Component {
       });
     };
 
-    const debugStateHandler = () => {
-      return JSON.stringify(this.state);
-    };
+    // const debugStateHandler = () => {
+    //   return JSON.stringify(this.state);
+    // };
 
     // DROPDOWN FORM HANDLERS
     const handleNChange = (event) => {
@@ -207,7 +213,9 @@ export default class Puzzle extends Component {
     const apiStatusString = () => {
       let result = true;
 
-      if (this.state.searching) {
+      if (this.state.dim > 4) {
+        result = (<span>Sorry, only available for 3x3 and 4x4 puzzles</span>);
+      } else if (this.state.searching) {
         result = (<span>Searching...</span>);
       } else if (this.state.searched && !this.state.isSolved) {
         result = (<span>Displaying solution</span>);
@@ -222,17 +230,25 @@ export default class Puzzle extends Component {
       return result;
     };
 
+    const dimDisabled = () => {
+      const dim = this.state.dim;
+      const allowedDim = (dim === 3 || dim === 4) ? true : false;
+      return this.state.isBeingSolved || !allowedDim;
+    };
+
     return (
       <div className="container">
-        <h1>Sliding Puzzle</h1>
-        <Helmet title="Sliding Puzzle"/>
-        <p>A sliding puzzle consists of a frame of numbered square tiles in random order with one tile missing. </p>
-        <p>The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space.</p>
-        <p>Check it out on github: <a href="https://github.com/andrewmontes87/react-sliding-puzzle" target="_blank">https://github.com/andrewmontes87/react-sliding-puzzle</a></p>
+        <h1>Sliding N-Puzzle</h1>
+        <Helmet title="Sliding N-Puzzle"/>
+        <p>A sliding puzzle consists of a frame of numbered square tiles in random order with one tile missing. The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space. This project is built with React + Redux.</p>
+        <p></p>
+        <p>Github: <a href="https://github.com/andrewmontes87/react-sliding-puzzle" target="_blank">https://github.com/andrewmontes87/react-sliding-puzzle</a></p>
+        <p>Puzzle solutions are found using the A* algorithm, using Manhattan distance for a heuristic. Solutions are provided by a Node.js webservice.</p>
+        <p>Github: <a href="https://github.com/andrewmontes87/node-sliding-puzzle" target="_blank">https://github.com/andrewmontes87/node-sliding-puzzle</a></p>
+        <p>Please note, this is all running on free Heroku servers, so it may be slow to get started.</p>
         <p><strong>How to play</strong></p>
         <ul>
           <li>Click a tile that is next to the empty space to slide it over.</li>
-          <li>See previous board moves in the list below to help solve the puzzle.</li>
           <li>Change the dimensions of your puzzle for a harder challenge.</li>
           <li>Click "Shuffle" to create a random shuffled puzzle to solve.</li>
           <li>Click "Reset" to bring the puzzle back to a solved state.</li>
@@ -251,7 +267,7 @@ export default class Puzzle extends Component {
           </form>
           <button className={styles.shuffleButton} disabled={this.state.isBeingSolved} onClick={shufflePuzzleStateHandler.bind(this, this.state.dim)}>Shuffle</button>
           <button className={styles.shuffleButton} disabled={this.state.isBeingSolved} onClick={this.resetPuzzle.bind(this, this.state.dim)}>Reset</button>
-          <button className={styles.shuffleButton} disabled={this.state.isBeingSolved || this.state.dim !== 3} onClick={this.getPuzzleSolution.bind(this)}>Solve</button>
+          <button className={styles.shuffleButton} disabled={ dimDisabled() } onClick={this.getPuzzleSolution.bind(this)}>Solve</button>
           <h4>A* solution status: { apiStatusString() }</h4>
           {(this.state.error) ? (<h4>Error: {this.state.error}</h4>) : null}
           <table key={'table'} className={ this.state.isSolved ? styles.puzzleBox + ' ' + styles.solvedPuzzle : styles.puzzleBox}>
@@ -275,24 +291,7 @@ export default class Puzzle extends Component {
               }
             </tbody>
           </table>
-          <h4 className={styles.movesListTitle}>Most Recent Moves</h4>
-          <ol>
-          {
-            this.state.lastMoves.map( (move, ix) => {
-              return (
-                <li key={'move-' + ix}><h5>{move}</h5></li>
-              );
-            })
-          }
-          {
-            (!this.state.lastMoves.length) ?
-            (<h5>No moves yet</h5>) :
-            null
-          }
-          </ol>
         </div>
-        <h4>Debug state</h4>
-        <div>{ debugStateHandler() }</div>
       </div>
     );
   }

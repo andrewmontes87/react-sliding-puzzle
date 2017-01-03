@@ -148,7 +148,7 @@ function findRandomNext(puzzleMatrix, empty, lastMove) {
 // BUILD A SHUFFLED BOARD AND RETURN A STATE OBJ
 function createShuffledPuzzleState(dim) {
   const minShuffle = dim;
-  const maxShuffle = dim * 3;
+  const maxShuffle = dim * 10;
   const steps = Math.floor(Math.random() * (maxShuffle - minShuffle + 1)) + minShuffle;
   const solutionMatrix = prepData(dim);
   let puzzleMatrix = prepData(dim);
