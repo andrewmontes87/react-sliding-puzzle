@@ -77,7 +77,7 @@ export default class Puzzle extends Component {
   // click handler for calling API with puzzle string
   getPuzzleSolution() {
     // only dim === 3 for now
-    if (this.state.dim === 3 || this.state.dim === 4) {
+    if (this.state.dim === 3) { // || this.state.dim === 4
       // upddate state so UI handlers are disabled
       this.setState({ isBeingSolved: true });
       // // format puzzle as string to just values
@@ -213,8 +213,8 @@ export default class Puzzle extends Component {
     const apiStatusString = () => {
       let result = true;
 
-      if (this.state.dim > 4) {
-        result = (<span>Sorry, only available for 3x3 and 4x4 puzzles</span>);
+      if (this.state.dim > 3) {  // 4
+        result = (<span>Sorry, only available for 3x3 puzzles</span>); //  and 4x4
       } else if (this.state.searching) {
         result = (<span>Searching...</span>);
       } else if (this.state.searched && !this.state.isSolved) {
@@ -232,7 +232,7 @@ export default class Puzzle extends Component {
 
     const dimDisabled = () => {
       const dim = this.state.dim;
-      const allowedDim = (dim === 3 || dim === 4) ? true : false;
+      const allowedDim = (dim === 3) ? true : false; // || dim === 4
       return this.state.isBeingSolved || !allowedDim;
     };
 
@@ -240,20 +240,9 @@ export default class Puzzle extends Component {
       <div className="container">
         <h1>Sliding N-Puzzle</h1>
         <Helmet title="Sliding N-Puzzle"/>
-        <p>A sliding puzzle consists of a frame of numbered square tiles in random order with one tile missing. The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space. This project is built with React + Redux.</p>
-        <p></p>
-        <p>Github: <a href="https://github.com/andrewmontes87/react-sliding-puzzle" target="_blank">https://github.com/andrewmontes87/react-sliding-puzzle</a></p>
-        <p>Puzzle solutions are found using the A* algorithm, using Manhattan distance for a heuristic. Solutions are provided by a Node.js webservice.</p>
-        <p>Github: <a href="https://github.com/andrewmontes87/node-sliding-puzzle" target="_blank">https://github.com/andrewmontes87/node-sliding-puzzle</a></p>
-        <p>Please note, this is all running on free Heroku servers, so it may be slow to get started.</p>
-        <p><strong>How to play</strong></p>
-        <ul>
-          <li>Click a tile that is next to the empty space to slide it over.</li>
-          <li>Change the dimensions of your puzzle for a harder challenge.</li>
-          <li>Click "Shuffle" to create a random shuffled puzzle to solve.</li>
-          <li>Click "Reset" to bring the puzzle back to a solved state.</li>
-          <li>Click "Solve" to have the puzzle solved for you, step by step.</li>
-        </ul>
+        <p>A sliding puzzle consists of a frame of numbered square tiles in random order with one tile missing.</p>
+        <p>The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space.</p>
+        <p>Press "Solve" to have the <a href="https://en.wikipedia.org/wiki/A*_search_algorithm" target="_blank" title="A* Search Algorithm">A* search algorithm</a> solve the puzzle for you.</p>
         <div>
           <form onSubmit={handleSubmit.bind(this)}>
             <label>
@@ -292,6 +281,21 @@ export default class Puzzle extends Component {
             </tbody>
           </table>
         </div>
+        <h2>How to play</h2>
+        <ul>
+          <li>Click a tile that is next to the empty space to slide it over.</li>
+          <li>Change the dimensions of your puzzle for a harder challenge.</li>
+          <li>Click "Shuffle" to create a random shuffled puzzle to solve.</li>
+          <li>Click "Reset" to bring the puzzle back to a solved state.</li>
+          <li>Click "Solve" to have the puzzle solved for you, step by step.</li>
+        </ul>
+        <h2>Develop</h2>
+        <p>This site is built with React + Redux.</p>
+        <p><a href="https://github.com/andrewmontes87/react-sliding-puzzle" target="_blank">https://github.com/andrewmontes87/react-sliding-puzzle</a></p>
+        <p>Puzzle solutions are found using the A* search algorithm, using Manhattan distance for a heuristic.</p>
+        <p>Solutions are provided by a Node.js webservice.</p>
+        <p><a href="https://github.com/andrewmontes87/node-sliding-puzzle" target="_blank">https://github.com/andrewmontes87/node-sliding-puzzle</a></p>
+        <p>This is all running on free Heroku servers, so it may be slow to get started.</p>
       </div>
     );
   }
