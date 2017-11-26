@@ -14,7 +14,8 @@ const domain = process.env.DOMAIN || 'http://react-sliding-puzzle.herokuapp.com/
 module.exports = Object.assign({
   host: process.env.HOST || 'localhost',
   port: process.env.PORT || 3000,
-  apiHost: process.env.APIHOST || 'http://node-sliding-puzzle.herokuapp.com',
+  // apiHost: process.env.APIHOST || 'http://node-sliding-puzzle.herokuapp.com',
+  apiHost: process.env.APIHOST || 'http://ec2-54-209-121-121.compute-1.amazonaws.com',
   apiPort: process.env.APIPORT || 80,
   domain: domain,
   loggingOff: process.env.LOGGING_OFF || true,
